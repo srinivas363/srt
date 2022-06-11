@@ -1,0 +1,24 @@
+{
+	"Resources": {
+		"myvpc":{
+		"Type":"AWS::EC2::VPC",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/16",
+			"Tags":[
+			{"Key":"Name",
+			"Value":"App1-Vpc"
+			},
+			{"Key":"Env",
+			"Value":"Dev"
+			}
+					]
+					}
+				},
+		"sn1":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/25",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1a"
+	}}}
+}

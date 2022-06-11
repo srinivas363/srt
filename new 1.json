@@ -1,0 +1,40 @@
+{
+	"Resources": {
+		"tg":	{
+		 "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
+		 "Properties" : {
+		 "Name" :"TG" ,
+		 "Port" : 80,
+		 "Protocol" : "HTTP",
+		 "VpcId": {"Fn::ImportValue" :{"Fn::Sub":"webvpcId" } }
+				}
+				},
+		"ELB":{
+		 "Type" : "AWS::ElasticLoadBalancingV2::LoadBalancer",
+		 "Properties" : { 
+		 "Name" :"AELB",
+		 "Subnets" :[{ "Fn::ImportValue":"websn1Id"},{ "Fn::ImportValue":"websn2Id"},{ "Fn::ImportValue":"websn3Id"}]
+		 }
+		 },
+		"LC1": {
+		 "Type": "AWS::AutoScaling::LaunchConfiguration",
+		 "Properties": {
+		 "ImageId": "ami-04d9e855d716f9c99",
+		 "InstanceType": "t2.micro",
+		 "SecurityGroups" :{"Fn::ImportValue" :{"Fn::Sub":"websg1" } },
+		 "UserData" :{"Fn::Base64":{"Fn::Join":["\n",["#! /binbash","apt-update","apt install apache2 -y"]]}}
+				 }
+				},
+		"ASG1":	{
+		 "Type" : "AWS::AutoScaling::AutoScalingGroup",
+		 "Properties" : {
+		  "AutoScalingGroupName" :"ASG",
+		  "TargetGroupARNs" : [{"Ref":"tg"}],
+		  "DesiredCapacity" : "3",
+		  "MaxSize" :"5",
+		  "MinSize" :"1",
+		  "LaunchConfigurationName" :{"Ref":"LC1"},
+		  "VPCZoneIdentifier" : [{ "Fn::ImportValue":"websn4Id"},{ "Fn::ImportValue":"websn5Id"},{ "Fn::ImportValue":"websn6Id"}]
+						}
+				}}
+}

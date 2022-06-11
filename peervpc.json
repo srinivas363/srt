@@ -1,0 +1,163 @@
+{
+	"Resources": {
+		"myvpc1":{
+		"Type":"AWS::EC2::VPC",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/24",
+			"Tags":[
+			{"Key":"Name1",
+			"Value":"App1-Vpc1"
+			},
+			{"Key":"Env1",
+			"Value":"Dev1"
+			}
+					]
+					}
+				},
+		"myvpc2":{
+		"Type":"AWS::EC2::VPC",
+		"Properties":{
+			"CidrBlock":"192.168.0.0/24",
+			"Tags":[
+			{"Key":"Name2",
+			"Value":"App1-Vpc2"
+			},
+			{"Key":"Env2",
+			"Value":"Dev2"
+			}
+					]
+					}
+				},
+		"sn1":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/25",
+			"VpcId":{"Ref":"myvpc1"},
+			"AvailabilityZone":"ap-southeast-1a"
+						}
+				},
+		"sn2":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.0.128/25",
+			"VpcId":{"Ref":"myvpc1"},
+			"AvailabilityZone":"ap-southeast-1b"
+						}
+				},
+		"sn3":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"192.168.0.0/25",
+			"VpcId":{"Ref":"myvpc2"},
+			"AvailabilityZone":"ap-southeast-1a"
+						}
+				},
+		"RT1":{
+		"Type" : "AWS::EC2::RouteTable",
+		"Properties" : {
+		"VpcId" :{"Ref":"myvpc1"}
+						}
+				},
+		"RT2":{
+		"Type" : "AWS::EC2::RouteTable",
+		"Properties" : {
+		"VpcId" :{"Ref":"myvpc1"}
+						}
+				},
+		"RT3":{
+		"Type" : "AWS::EC2::RouteTable",
+		"Properties" : {
+		"VpcId" :{"Ref":"myvpc2"}
+						}
+				},
+		"IG1":{
+		"Type" : "AWS::EC2::InternetGateway",
+		"Properties" : {
+		"Tags" : [
+		{"Key":"Name",
+		"Value":"IGW1"}]
+						}
+	 		},
+		
+		"VPCIGattach":{
+		 "Type" : "AWS::EC2::VPCGatewayAttachment",
+		 "Properties" : {
+		 "InternetGatewayId":{"Ref":"IG1"},
+		 "VpcId": {"Ref":"myvpc1"}
+						}
+					},
+		"ERTs1":{
+		 "Type" : "AWS::EC2::Route",
+		 "Properties" : {
+		 "DestinationCidrBlock" :"0.0.0.0/0",
+		 "GatewayId" :{"Ref":"IG1"} ,
+		 "RouteTableId" : {"Ref":"RT1"}
+						 }
+						},
+		"SRTass2":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT2"},
+			 "SubnetId":{"Ref":"sn2"}
+						 }
+						},
+		"SRTass3":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT3"},
+			 "SubnetId":{"Ref":"sn3"}
+						 }
+						},
+		"VPCpeer":{
+		 "Type" : "AWS::EC2::VPCPeeringConnection",
+		 "Properties" : {
+		 "PeerVpcId" :{"Ref":"myvpc1"},
+		 "VpcId" : {"Ref":"myvpc2"},
+		 "PeerRoleArn" : "peer1"
+		}},
+		"ert1vpc1":{
+		 "Type" : "AWS::EC2::Route",
+		 "Properties" : {
+		 "RouteTableId" :{"Ref":"RT2"},	 
+		 "DestinationCidrBlock" :"192.168.0.0/25",
+		 "VpcPeeringConnectionId" :{"Ref":"VPCpeer"}
+		 
+		}},
+		"ert2vpc2":{
+		 "Type" : "AWS::EC2::Route",
+		 "Properties" : {
+		 "RouteTableId" :{"Ref":"RT3"},
+		 "DestinationCidrBlock" :"10.0.0.128/25",
+		 "VpcPeeringConnectionId" :{"Ref":"VPCpeer"}
+		 
+		}},
+		"Ins1":{
+		 "Type":"AWS::EC2::Instance",
+		 "Properties":{
+		 "InstanceType":"t2.micro",
+		 "SubnetId":{"Ref":"sn1"},
+		 "ImageId":"ami-04d9e855d716f9c99"
+		
+					}
+				},
+		"Ins2":{
+		 "Type":"AWS::EC2::Instance",
+		 "Properties":{
+		 "InstanceType":"t2.micro",
+		 "SubnetId":{"Ref":"sn2"},
+		 "ImageId":"ami-04d9e855d716f9c99"
+		
+					}
+				},
+		"Ins3":{
+		 "Type":"AWS::EC2::Instance",
+		 "Properties":{
+		 "InstanceType":"t2.micro",
+		 "SubnetId":{"Ref":"sn3"},
+		 "ImageId":"ami-04d9e855d716f9c99"
+		
+					}
+				}
+			}
+}
+			

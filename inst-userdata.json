@@ -1,0 +1,28 @@
+{ "Parameters":{
+		"userdat":{
+		"Type":"String",
+		"AllowedValues":["yes","no"]
+}},
+  "Conditions" : {
+		"user" : {
+		"Fn::Equals" : [{ "Ref" : "userdat" }, "yes" ]
+ }
+ },
+
+	
+	"Resources":{
+		"Ins1":{
+		"Type":"AWS::EC2::Instance",
+		"Properties":{
+		"AvailabilityZone":"ap-southeast-1a",
+		"InstanceType":"t2.micro",
+		"SubnetId":"subnet-0ad438a5d84763365",
+		"ImageId":"ami-04d9e855d716f9c99",
+		"UserData":{
+			"Fn::If":["user",{ "Fn::Base64":{ "Fn::Join": [ "\n",["#! /bin/bash","apt update","apt install apache2 -y"] ] }},{"Ref" : "AWS::NoValue"}]
+		
+				}
+}
+	}
+}
+}

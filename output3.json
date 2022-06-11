@@ -1,0 +1,20 @@
+{	"Resources": {
+	 "HZ":{
+		 "Type" : "AWS::Route53::HostedZone",
+		 "Properties" : {
+		 "Name" :"abc.com"
+						}
+			},
+	 "RS":{
+		 "Type" : "AWS::Route53::RecordSet",
+		 "Properties" : {
+			"Type " :"A",
+			"Name " :"abc.com",
+			"AliasTarget " :{
+				   "DNSName" :{"Fn::ImportValue":"DNSName" },
+				   "HostedZoneId ":{"Fn::ImportValue":"webCHZId"}
+			 }
+		 }
+		}
+}
+}

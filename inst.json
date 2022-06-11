@@ -1,0 +1,33 @@
+{  "Parameters":{
+	"Env":{
+		"Type":"String",
+		"AllowedValues" : ["dev","prod"]
+	}},
+	
+	"Conditions":{
+		"createEIP":{
+		"Fn::Equals":[{"Ref":"Env"},"prod"]
+		}
+	},
+	
+	"Resources":{
+	"Ins1":{
+	"Type":"AWS::EC2::Instance",
+	"Properties":{
+	"AvailabilityZone":"ap-southeast-1a",
+	"InstanceType":"t2.micro",
+	"SubnetId":"subnet-0ad438a5d84763365",
+	"ImageId":"ami-04d9e855d716f9c99"
+	
+				}
+			},
+	"createEIP":
+	{
+	 "Type" : "AWS::EC2::EIP",
+	 "Condition":"createEIP",
+	 "Properties" : {
+	 "InstanceId" :{"Ref":"Ins1"}
+	}
+}
+	}
+}

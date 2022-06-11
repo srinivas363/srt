@@ -1,0 +1,43 @@
+{	
+	"Parameters":{
+		"Instype":{
+			"Type":"String",
+			"Description":"type of instance"},
+		"Vol":{
+			"Type":"Number",
+			"Description":"size of volume"},
+		"AmiId":{
+			"Type":"String",
+			"Description":"ami id enter"},
+		"SubId":{
+			"Type":"String",
+			"Description":"enter subnet id"}
+			},
+	"Resources":{
+		"Ins":{
+		 "Type" : "AWS::EC2::Instance",
+		 "Properties" : {
+		 "ImageId" :{"Ref":"AmiId"},
+		 "InstanceType":{"Ref":"Instype"},
+		 "SubnetId":{"Ref":"SubId"}
+		 }},
+		"V1":{
+		 "DependsOn":["Ins"],
+		 "Type" :"AWS::EC2::Volume",
+		 "Properties" : {
+			"AvailabilityZone":{"Fn::GetAtt":["Ins","AvailabilityZone"]},
+			"Size" : {"Ref":"Vol"},
+			"VolumeType":"gp2"
+						}
+			},
+		"V1att":{
+		 "Type":"AWS::EC2::VolumeAttachment",
+		 "Properties" : {
+			 "Device":"/dev/sdh",
+			 "InstanceId" :{"Ref":"Ins"},
+			 "VolumeId": {"Ref":"V1"}
+						}
+				}
+
+}
+}

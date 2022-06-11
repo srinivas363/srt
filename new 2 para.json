@@ -1,0 +1,31 @@
+{
+ "Parameters": {
+ "AmiID": {
+	 "Type":"String",
+ "Description": "The AmiID "
+}
+},
+
+ "Resources":{
+		"Ins":{
+		"Type":"AWS::EC2::Instance",
+		"Properties":{
+			"AvailabilityZone":"ap-southeast-1a",
+			"SubnetId":"subnet-0ad438a5d84763365",
+			"InstanceType":"t2.micro",
+			"ImageId":{"Ref":"AmiID"}
+				}		
+	},
+	"myvolume":{
+	"Type":"AWS::EC2::Volume",
+	"Properties":{
+	"AvailabilityZone":"ap-southeast-1a",
+	"Size":"5"	}
+	},
+	"EIP" : {
+		 "Type" : "AWS::EC2::EIP",
+		 "Properties" : {
+						 }
+				}	
+}
+}

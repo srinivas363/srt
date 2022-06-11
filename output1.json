@@ -1,0 +1,219 @@
+{
+	"Resources": {
+		"myvpc":{
+		"Type":"AWS::EC2::VPC",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/16",
+			"Tags":[
+			{"Key":"Name",
+			"Value":"App1-Vpc"
+			},
+			{"Key":"Env",
+			"Value":"Dev"
+			}
+					]
+					}
+				},
+		"sn1":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.0.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1a"
+						}
+				},
+		"sn2":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.1.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1b"
+						}
+				},
+		"sn3":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.2.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1c"
+						}
+				},
+		
+		"sn4":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.3.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1a"
+						}
+				},
+		"sn5":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.4.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1b"
+						}
+				},
+		"sn6":{
+		"Type":"AWS::EC2::Subnet",
+		"Properties":{
+			"CidrBlock":"10.0.5.0/24",
+			"VpcId":{"Ref":"myvpc"},
+			"AvailabilityZone":"ap-southeast-1c"
+						}
+				},
+		"RT1":{
+		"Type" : "AWS::EC2::RouteTable",
+		"Properties" : {
+		"VpcId" :{"Ref":"myvpc"}
+						}
+				},
+			"RT2":{
+		"Type" : "AWS::EC2::RouteTable",
+		"Properties" : {
+		"VpcId" :{"Ref":"myvpc"}
+						}
+				},
+		"IG":{
+		"Type" : "AWS::EC2::InternetGateway",
+		"Properties" : {
+		"Tags" : [
+		{"Key":"Name",
+		"Value":"IGW"}]
+						}
+	 		},
+		"VPCIGattach":{
+		 "Type" : "AWS::EC2::VPCGatewayAttachment",
+		 "Properties" : {
+		 "InternetGatewayId":{"Ref":"IG"},
+		 "VpcId": {"Ref":"myvpc"}
+						}
+					},
+		"ERTs1":{
+		 "Type" : "AWS::EC2::Route",
+		 "Properties" : {
+		 "DestinationCidrBlock" :"0.0.0.0/0",
+		 "GatewayId" :{"Ref":"IG"} ,
+		 "RouteTableId" : {"Ref":"RT1"}
+						 }
+						},
+	
+		"SRTass1":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT1"},
+			 "SubnetId":{"Ref":"sn1"}
+						 }
+						},
+		"SRTass2":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT1"},
+			 "SubnetId":{"Ref":"sn2"}
+						 }
+						},
+		"SRTass3":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT1"},
+			 "SubnetId":{"Ref":"sn3"}
+						 }
+						},
+		"NAT" : {
+		 "Type" : "AWS::EC2::NatGateway",
+		 "Properties" : {
+		 "AllocationId" : { "Fn::GetAtt" : ["EIP", "AllocationId"]},
+		 "SubnetId" : { "Ref" : "sn1"}
+						 }
+				},
+		"EIP" : {
+		 "Type" : "AWS::EC2::EIP",
+		 "Properties" : {
+		 "Domain" : "myvpc"
+						 }
+				},
+		"ERTs2" : {
+		 "Type" : "AWS::EC2::Route",
+		 "Properties" : {
+		 "RouteTableId" : { "Ref" : "RT2" },
+		 "DestinationCidrBlock" : "0.0.0.0/0",
+		 "NatGatewayId" : { "Ref" : "NAT" }
+						 }
+						},
+		"SRT1ass4":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT2"},
+			 "SubnetId":{"Ref":"sn4"}
+						 }
+						},
+		"SRT1ass5":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT2"},
+			 "SubnetId":{"Ref":"sn5"}
+						 }
+						},
+		"SRT1ass6":{
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+			 "RouteTableId" : {"Ref":"RT2"},
+			 "SubnetId":{"Ref":"sn6"}
+						 }
+						},
+		"SG1":	{	
+		 "Type" : "AWS::EC2::SecurityGroup",
+		 "Properties" :
+		 {
+		 "GroupDescription" :"Allow http to client host",
+		 "VpcId": {"Ref":"myvpc"},
+		 "Tags":[
+			{"Key":"Name",
+			"Value":"SG1"
+			}
+					],
+		 "SecurityGroupEgress" : [
+			 {
+			 "IpProtocol" : "tcp",
+			 "FromPort" : "80",
+			 "ToPort" : "80",
+			 "CidrIp" : "0.0.0.0/0"
+			 } ],
+		 "SecurityGroupIngress" : [ 
+			 {
+			 "IpProtocol" : "tcp",
+			 "FromPort" : "80",
+			 "ToPort" : "80",
+			 "CidrIp" : "0.0.0.0/0"
+			 }]
+		}
+	}
+	},
+	"Outputs":{
+		"vpcId":{
+		"Value":{"Ref":"myvpc"},
+		"Export":{"Name":"webvpcId"}},
+		"sn1Id":{
+		"Value":{"Ref":"sn1"},
+		"Export":{"Name":"websn1Id"}},
+		"sn2Id":{
+		"Value":{"Ref":"sn2"},
+		"Export":{"Name":"websn2Id"}},
+		"sn3Id":{
+		"Value":{"Ref":"sn3"},
+		"Export":{"Name":"websn3Id"}},
+		"sn4Id":{
+		"Value":{"Ref":"sn4"},
+		"Export":{"Name":"websn4Id"}},
+		"sn5Id":{
+		"Value":{"Ref":"sn5"},
+		"Export":{"Name":"websn5Id"}},
+		"sn6Id":{
+		"Value":{"Ref":"sn6"},
+		"Export":{"Name":"websn6Id"}},
+		"SG1Id":{
+		"Value":{"Ref":"SG1"},
+		"Export":{"Name":"websg1"}}
+		}
+		}
