@@ -1,0 +1,30 @@
+{	"parameters":{
+		"env":{
+			"Type":"String",
+			"AllowedValues":["Dev","Test"]
+			}},
+	
+	"Mappings":{
+		"amis":{
+			"ap-south-1":{"Dev":"ami-0756a1c858554433e",
+						"Test":"ami-0756a1c858554433e"}	
+			"ap-southeast-1":{"Dev":"ami-04d9e855d716f9c99",
+						"Test":"ami-04d9e855d716f9c99"}
+			},
+		"IType":{
+			"ap-south-1":[{"Dev":"t2.micro","Test":"t2.small"}],
+			
+			"ap-southeast-1":[{"Dev":"t2.small","Test":"t2.small"}]
+			}
+			},
+	"Resources":{
+		"Ins1":{
+		"Type":"AWS::EC2::Instance",
+		"Properties":{
+			"ImageId":{"Fn::FindInMap": ["amis",{ "Ref" : "AWS::Region" },{"Ref":"env"}]},
+
+			"InstanceType":{"Fn::FindInMap": ["IType",{ "Ref" : "AWS::Region" },{"Ref":"env"}]}
+		}		
+		}
+		}
+}

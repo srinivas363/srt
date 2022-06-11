@@ -1,0 +1,163 @@
+Resources:
+  vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+      - Key: Name
+        Value: App1-Vpc
+      - Key: Env
+        Value: dev
+  SN1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1a
+  SN2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1b
+  SN3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1c
+  SN4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.3.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1a
+  SN5:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.4.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1b
+  SN6:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.5.0/24
+      VpcId: 
+        Ref: vpc
+      AvailabilityZone: ap-southeast-1c
+  RT1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpc
+  RT2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpc
+  IG:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: IG1
+  vpcIgAtt:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: 
+        Ref: vpc
+      InternetGatewayId: 
+        Ref : IG
+  ERT1:
+    Type: AWS::EC2::Route
+    Properties: 
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: IG
+      RouteTableId: 
+        Ref: RT1
+  SN1Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT1
+      SubnetId:
+        Ref: SN1
+  SN2Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT1
+      SubnetId:
+        Ref: SN2
+  SN3Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT1
+      SubnetId:
+        Ref: SN3
+  NAT:
+    Type: "AWS::EC2::NatGateway"
+    Properties: 
+      AllocationId: 
+        Fn::GetAtt:
+        - EIP
+        - AllocationId
+      SubnetId: 
+        Ref: SN1
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  ERT2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: RT2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT
+  SN4Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT2
+      SubnetId:
+        Ref: SN4
+  SN5Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT2
+      SubnetId:
+        Ref: SN5
+  SN6Ass:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: 
+        Ref: RT2
+      SubnetId:
+        Ref: SN6
+  TG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      VpcId:
+        Ref: vpc
+  ELB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+       Subnets:
+       - Ref: SN1
+       - Ref: SN2
+       - Ref: SN3
+       Name: ALB     
+
+  
