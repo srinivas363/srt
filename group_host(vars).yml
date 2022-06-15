@@ -1,0 +1,63 @@
+-name: sample test play book
+ hosts: all
+ tasks:
+ - git:
+    repo: https://github.com/svreddy1605/test.git
+    dest: /tmp/abc
+=========================================================================
+# create a group_vars dir 
+# ==> withh 3 files grp1,grp2,grp3
+
+group_vars:
+grp1:
+ name: apache2
+ state: present
+grp2:
+ name: awscli
+ state: present
+grp3:
+ name: nginx
+ state: present
+
+- name: installing apache2,awscli,mginx using group_vars
+  hosts: all
+  become: yes
+  tasks:
+  - apt:
+       name: "{{ p_name }}"
+       state: "{{ p_state }}"
+       update_cache: yes
+=============================================================================
+# create a host_vars dir 
+# ==> withh 3 file with ip address
+
+host_vars:
+172.31.45.21:
+  name: apache2
+  state: present
+172.31.4.23:
+  name: awscli
+  state: present
+172.31.5.25:
+  name: nginx
+  state: present
+
+- name: installing apache2,awscli,mginx using group_vars
+  hosts: all
+  become: yes
+ tasks:
+  - apt:
+       name: "{{ p_name }}"
+       state: "{{ p_state }}"
+
+===========================================================================
+- name: installing apache2,awscli,mginx using group_vars
+  hosts: all
+  become: yes
+  vars:
+       name: awscli
+       state: present
+ tasks:
+  - apt:
+       name: "{{ p_name }}"
+       state: "{{ p_state }}"
