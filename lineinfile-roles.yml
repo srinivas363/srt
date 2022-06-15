@@ -1,0 +1,123 @@
+=======================================================================
+- name: lineinfile changing port no examples
+  hosts: 172.31.15.24
+  become: yes
+  tasks:
+  - lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#port 22'
+       line: port 23
+  - service:
+       name: ssh
+       state: restarted
+=======================================================================
+- name: lineinfile examples PasswordAuthentication
+  hosts: 172.31.15.24
+  become: yes
+  tasks:
+  - lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^PasswordAuthentication no'
+       line: PasswordAuthentication yes
+  - service:
+       name: ssh
+       state: restarted
+=======================================================================
+- name: lineinfile examples changing hosts in inv dir
+  hosts: localhost
+  become: yes
+  tasks:
+  - lineinfile:
+       path: /home/ubuntu/inv
+       regexp: '^172.24.13.245'
+       line: 0.0.0.0
+=======================================================================
+# if tasks fails then only the rescue executes
+
+- name: handling errors
+  hosts: all
+  become: yes
+  tasks:
+  - block:
+    - apt:
+        name: apache2
+        state: present
+    - service:
+        name: java
+        state: restarted
+    rescue:
+    - name: debuging
+      debug:
+        msg: hi hello   
+=======================================================================
+# if tasks executes then rescue will not execute
+
+- name: handling errors
+  hosts: all
+  become: yes
+  tasks:
+  - block:
+    - apt:
+        name: apache2
+        state: present
+    - service:
+        name: apache2
+        state: restarted
+    rescue:
+    - name: debuging
+      debug:
+        msg: hi hello   
+=======================================================================
+# if tasks executes or not always will execute
+
+- name: handling errors
+  hosts: all
+  become: yes
+  tasks:
+  - block:
+    - apt:
+        name: apache2
+        state: present
+    - service:
+        name: apache2
+        state: restarted
+    always:
+    - name: debuging
+      debug:
+        msg: hi hello
+=======================================================================
+
+# using roles installing apache2 nginx
+
+using the following command
+# sudo ansible-galaxy init my-role
+# then
+# create 2 roles -apache2,nginx
+# sudo ansible-galaxy init apache2
+# sudo ansible-galaxy init nginx
+
+#then switch to tasks in apache2 dir
+
+#main.yml
+# tasks file for apache2
+
+- name: install apache2
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+	
+# tasks file for nginx
+- name: install apache2
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: using roles for install nginx apache2
+  hosts: all
+  become: yes
+  roles:
+    - nginx
+    - apache2
+================================================================

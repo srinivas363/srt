@@ -1,0 +1,31 @@
+=======================================================================
+- name: lineinfile changing port no examples
+  hosts: 172.31.15.24
+  become: yes
+  tasks:
+  - lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#port 22'
+       line: port 23
+  - service:
+       name: ssh
+       state: restarted
+=======================================================================
+- name: lineinfile examples PasswordAuthentication
+  hosts: 172.31.15.24
+  become: yes
+  tasks:
+  - lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^PasswordAuthentication no'
+       line: PasswordAuthentication yes
+  - service:
+       name: ssh
+       state: restarted
+=======================================================================
+
+=======================================================================
+
+=======================================================================
+
+=======================================================================

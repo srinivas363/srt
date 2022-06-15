@@ -1,0 +1,118 @@
+- name: copy files to destination
+  hosts: all
+  tasks:
+    - name: copy /etc/passwd to controller
+      copy:
+        src: /etc/passwd
+        dest: /home/ubuntu
+=======================================================================================================================================================
+- name: copy files to destination
+  hosts: all
+  become: yes
+  tasks:
+    - name: copy /etc/passwd to controller
+      copy:
+        src: /etc/passwd
+        dest: /home/ubuntu
+        owner: root
+        group: root
+        mode: 0777
+=======================================================================================================================================================
+- name: copy files to destination
+  hosts: all
+  become: yes
+  tasks:
+    - name: copy /etc/passwd to controller
+      copy:
+        src: /etc/passwd
+        dest: /home/ubuntu
+        owner: root
+        group: root
+        mode: u=rwx,g+rwx,o-rwx
+=======================================================================================================================================================
+- name: retvive file
+  hosts: all
+  tasks:
+  - stat:
+       path: /home/f11
+    register: output
+  - file:
+       path: /home/f11
+       state: touch
+    when: output.stat.exists == false
+  - debug:
+       var: output.stat.exists
+
+=======================================================================================================================================================
+- name: Add the user
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - apt:
+      name: apache2
+      state: present
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+  - yum:
+      name: httpd
+      state: present
+      update_cache: yes
+    when: ansible_distribution != "Ubuntu"
+=======================================================================================================================================================
+- name: deleting multiple users
+  hosts: all
+  become: yes
+  tasks:
+  - user:
+      name: "{{ item }}"
+      state: absent
+    loop:
+      - srinu
+      - karthik
+      - teju
+=======================================================================================================================================================
+- name: creating multiple users
+  hosts: all
+  become: yes
+  tasks:
+  - user:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - srinu
+      - karthik
+      - teju
+
+=======================================================================================================================================================
+- name: apache2 install and start service
+  hosts: all
+  become: yes
+  tasks:
+    - name: apache2 install
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+    - name: service apache2 start
+      service:
+        name: apache2
+        state: started
+============================================================================================================================================================
+- name: copy file from MN-1 node to MN-2 node using fetch and copy
+  hosts: 172.31.1.88
+  tasks:
+    - name: fetch file from MN-1
+      fetch:
+        name: fetch file /home/ubuntu/file1
+        src: /home/ubuntu/file1
+        dest: /home/ubuntu
+- name: copy file from controller to MN-2 node
+  hosts: 172.31.11.192
+  tasks:
+    - name: copy file from controller node to MN-2 node
+      copy:
+        src: 172.31.1.88/home/ubuntu/file1
+        dest: /home/ubuntu
+============================================================================================================================================================
+

@@ -1,0 +1,63 @@
+- name: mounting volume to instance
+  hosts: M1
+  become: yes
+  tasks:
+  - mount:
+      path: /
+      src: /M1
+      state: present
+      fstype: ext4  
+================================================================================
+include_vars:
+file_name: 1.yml
+p_name:
+    - nginx
+    - tomcat9
+	
+- name: include_vars example
+  hosts: all
+  tasks:
+  - name: vars include
+    include_vars: 1.yml
+  - name: install apache2
+    apt:
+      name: "{{ p_name }}"
+      state: present
+      update_cache: yes
+================================================================================
+include_tasks:
+file_name: 1.yml
+- name: install python3
+  apt:
+     name: python3
+     state: present
+     update_cache: yes
+	 
+- name: copy file
+  hosts: all
+  become: yes
+  tasks:
+  - include_tasks: play2.yml
+  - copy:
+      src: ~/9.yml
+      dest: ~/
+  - debug:
+      msg: hi iam srinu from pargi
+
+================================================================================
+ignoring_errors:
+
+- name: example for ignore_errors
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+  - apt:
+      name: awscli
+      state: present
+  - name: srinu
+    service:
+      name: srinu
+      state: restarted
+    ignore_errors: True
+================================================================================

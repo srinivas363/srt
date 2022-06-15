@@ -1,0 +1,13 @@
+- name: create a file in /tmp/sheshi
+  hosts: all
+  vars:
+    flg: y
+  tasks:
+  -stat:
+     path: /tmp/sheshi
+   register: abc
+  -debug: msg
+  - file:
+      src: /etc/passwd
+      dest: /tmp/sheshi
+    when: flg== "y" 

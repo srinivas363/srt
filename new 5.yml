@@ -1,0 +1,122 @@
+- name: Add the user
+  hosts: all
+  become: yes
+  tasks:
+  - user:
+      name: sheshi
+      group: ubuntu
+    when: ansible_distribution=="ubuntu"
+  - user:
+      name: srinu
+      group: ec2-user
+    when: ansible_distribution=="RedHat"   
+
+=======================================================================    
+- name: Add the user
+  hosts: all
+  become: yes
+  tasks:
+  - user:
+      name: "{{ item }}"
+    with_items:
+      - sai
+      - std
+=======================================================================
+- name: Add the user
+  hosts: all
+  become: yes
+  tasks:
+  - user:
+      name: "{{ item }}"
+    loop:
+      - si
+      - st
+=======================================================================
+- name: installing diff packages
+  hosts: all
+  become: yes
+  tasks: 
+  - apt:
+      name: "{{ package_name }}"
+      state: "{{ v_state }}"
+      update_cache: yes
+=======================================================================
+- name: example for handlers
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+  - copy:
+      src: /etc/ssh/sshd_config
+      dest: /etc/ssh/sshd_config
+  - name: sheshi
+    service:
+      name: ssh
+      state: restarted
+=======================================================================
+- name: example for handlers
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+  - copy:
+      src: /etc/ssh/sshd_config
+      dest: /etc/ssh/sshd_config
+    notify: restart ssh service
+  handlers:
+  - name: sheshi
+    service:
+      name: ssh
+      state: restarted
+=======================================================================
+- name: example for handlers
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+  - copy:
+      src: /etc/ssh/sshd_config
+      dest: /home/ubuntu
+    notify: handler1
+  - apt:
+      name: tree
+      state: present
+      update_cache: yes
+    notify: handler1
+  handlers:
+  - name: handler1
+    debug:
+      msg: testing machine
+	  
+=======================================================================
+- name: example for handlers
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+  - copy:
+      src: /etc/ssh/sshd_config
+      dest: /home/ubuntu
+    notify:
+    - handler1
+    - handler2
+  - apt:
+      name: tree
+      state: present
+      update_cache: yes
+    notify: handler1
+  handlers:
+  - name: handler1
+    debug:
+      msg: testing machine
+=======================================================================
+
+=======================================================================
+
+=======================================================================
+
+=======================================================================
+
+=======================================================================
+
+=======================================================================
