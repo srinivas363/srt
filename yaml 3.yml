@@ -1,8 +1,0 @@
-Version: 2012
-Statement:
-- abc:
-  Effect: Allow
-  action: ec2
-- bbc:
-   Effect: Deny
-   action: TerminateInstances
